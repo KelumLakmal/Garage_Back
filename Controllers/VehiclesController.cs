@@ -16,7 +16,7 @@ public class VehiclesController : ControllerBase
         var vehicles = await _context.Vehicles
         .Include(v => v.Brand)
         .Include(v => v.Customer)
-        .OrderByDescending(v => v.Id)
+        // .OrderByDescending(v => v.Id)
         .ToListAsync();
 
         return Ok(vehicles);
