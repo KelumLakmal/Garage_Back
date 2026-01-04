@@ -29,6 +29,12 @@ public class ApplicationDbContext : DbContext
         modelBuilder.Entity<Customer>()
         .Property(c => c.IsActive)
         .HasDefaultValue(true);
+
+        modelBuilder.Entity<Vehicle>()
+        .Property(v => v.IsActive)
+        .HasDefaultValue(true);
+
+
     }
     
 }

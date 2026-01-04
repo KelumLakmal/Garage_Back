@@ -8,6 +8,13 @@ public class Vehicle
     public int Id {get; set;}
     public required string PlateNumber {get; set;}
     public string? Model {get; set;}
+
+    public bool IsActive {get; set;} = true;
+
+    public DateTime CreatedDate {get; set;}
+    public DateTime? ModifiedDate {get; set;}
+
+    public string? ImagePath {get; set;}
     // foreign key
     public int BrandId {get; set;}
     // navigation property
