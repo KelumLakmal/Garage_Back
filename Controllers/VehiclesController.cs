@@ -12,6 +12,8 @@ public class VehiclesController : ControllerBase
     {
         _context = applicationDbContext;
     }
+
+    private string BaseUrl => $"{Request.Scheme}://{Request.Host}";
     // [HttpGet]
     // public async Task<IActionResult> GetVehicles()
     // {
@@ -24,38 +26,84 @@ public class VehiclesController : ControllerBase
     //     return Ok(vehicles);
     // }
     [HttpGet]
-    public async Task<IActionResult> GetVehicles()
+    public async Task<IActionResult> GetVehicles([FromQuery] VehicleFilterDto vehicleFilterDto)
     {
-        var baseUrl = $"{Request.Scheme}://{Request.Host}";
+        // var baseUrl = $"{Request.Scheme}://{Request.Host}";
 
-        var vehicles = await _context.Vehicles
-        .Include(v => v.Brand)
-        .Include(v => v.Customer)
-        .OrderByDescending(v => v.Id)
-        .Where(v => v.IsActive == true)
-        .Select(v => new VehicleDto
+        IQueryable<Vehicle> query = _context.Vehicles.Where(v => v.IsActive == true);
+
+        if (!string.IsNullOrWhiteSpace(vehicleFilterDto.PlateNumber))
         {
-            Id = v.Id,
-            PlateNumber = v.PlateNumber,
-            Model = v.Model,
-            ImageUrl = v.ImagePath != null ? $"{baseUrl}/vehicle-images/{v.ImagePath}" : null,
-            Brand = new BrandDto
-            {
-                Id = v.Brand.Id,
-                Name = v.Brand.Name
-            },
-            Customer = new CustomerDto
-            {
-                Id = v.Customer.Id,
-                Name = v.Customer.Name,
-                Mobile = v.Customer.Mobile,
-                Nic = v.Customer.Nic,
-                Email = v.Customer.Email
-            }
+            query = query.Where(v => EF.Functions.Like(v.PlateNumber, $"%{vehicleFilterDto.PlateNumber}%"));
         }
-        ).ToListAsync();
+        if (vehicleFilterDto.BrandId > 0)
+        {
+            query = query.Where(v => v.BrandId == vehicleFilterDto.BrandId);
+        }
+        if (vehicleFilterDto.CustomerId > 0)
+        {
+            query = query.Where(v => v.CustomerId == vehicleFilterDto.CustomerId);
+        }
 
+        var vehicles = await query
+       //    .Include(v => v.Brand)
+       //    .Include(v => v.Customer)
+       .OrderByDescending(v => v.Id)
+       .Select(v => new VehicleDto
+       {
+           Id = v.Id,
+           PlateNumber = v.PlateNumber,
+           Model = v.Model,
+           ImageUrl = v.ImagePath != null ? $"{BaseUrl}/vehicle-images/{v.ImagePath}" : null,
+           Brand = v.Brand == null ? null : new BrandDto
+           {
+               Id = v.Brand.Id,
+               Name = v.Brand.Name,
+               BrandImageUrl = v.Brand.ImagePath != null ? $"{BaseUrl}/brand-images/{v.Brand.ImagePath}" : null
+           },
+           Customer = v.Customer == null ? null : new CustomerDto
+           {
+               Id = v.Customer.Id,
+               Name = v.Customer.Name,
+               Mobile = v.Customer.Mobile,
+               Nic = v.Customer.Nic,
+               Email = v.Customer.Email
+           }
+       })
+       .ToListAsync();
         return Ok(vehicles);
+
+
+
+
+        // var vehicles = await _context.Vehicles
+        // .Include(v => v.Brand)
+        // .Include(v => v.Customer)
+        // .OrderByDescending(v => v.Id)
+        // .Where(v => v.IsActive == true)
+        // .Select(v => new VehicleDto
+        // {
+        //     Id = v.Id,
+        //     PlateNumber = v.PlateNumber,
+        //     Model = v.Model,
+        //     ImageUrl = v.ImagePath != null ? $"{baseUrl}/vehicle-images/{v.ImagePath}" : null,
+        //     Brand = new BrandDto
+        //     {
+        //         Id = v.Brand.Id,
+        //         Name = v.Brand.Name
+        //     },
+        //     Customer = new CustomerDto
+        //     {
+        //         Id = v.Customer.Id,
+        //         Name = v.Customer.Name,
+        //         Mobile = v.Customer.Mobile,
+        //         Nic = v.Customer.Nic,
+        //         Email = v.Customer.Email
+        //     }
+        // }
+        // ).ToListAsync();
+
+        // return Ok(vehicles);
 
         // var vehicles = await _context.Vehicles.Where(v => v.IsActive == true)
         // .Include(v => v.Brand)
@@ -65,19 +113,90 @@ public class VehiclesController : ControllerBase
 
         // return Ok(vehicles);
     }
+    // [HttpGet("{id:int}")]
+    // public async Task<IActionResult> GetVehicleById(int id)
+    // {
+    //     var vehicle = await _context.Vehicles
+    //     .Include(v => v.Brand)
+    //     .Include(v => v.Customer)
+    //     .FirstOrDefaultAsync(v => v.Id == id);
+    //     if (vehicle is null)
+    //     {
+    //         return NotFound();
+    //     }
+    //     return Ok(vehicle);
+    // }
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetVehicleById(int id)
     {
+        // var baseUrl = $"{Request.Scheme}://{Request.Host}";
+
         var vehicle = await _context.Vehicles
-        .Include(v => v.Brand)
-        .Include(v => v.Customer)
-        .FirstOrDefaultAsync(v => v.Id == id);
+        .Where(v => v.Id == id)
+        .Select(v => new VehicleDto
+        {
+            Id = v.Id,
+            PlateNumber = v.PlateNumber,
+            Model = v.Model,
+            ImageUrl = v.ImagePath != null ? $"{BaseUrl}/vehicle-images/{v.ImagePath}" : null,
+            Brand = v.Brand == null ? null : new BrandDto
+            {
+                Id = v.Brand.Id,
+                Name = v.Brand.Name
+            },
+            Customer = v.Customer == null ? null : new CustomerDto
+            {
+                Id = v.Customer.Id,
+                Name = v.Customer.Name,
+                Mobile = v.Customer.Mobile,
+                Nic = v.Customer.Nic,
+                Email = v.Customer.Email
+            }
+        }
+        )
+        .FirstOrDefaultAsync();
+
         if (vehicle is null)
         {
             return NotFound();
         }
+
         return Ok(vehicle);
+
+
+
+
+
+        // var vehicle = await _context.Vehicles.FindAsync(id);
+        // if (vehicle is null)
+        // {
+        //     return NotFound();
+        // }
+
+        // var vehicleById = new VehicleDto
+        // {
+        //     Id = vehicle.Id,
+        //     PlateNumber = vehicle.PlateNumber,
+        //     Model = vehicle.Model,
+        //     ImageUrl = vehicle.ImagePath != null ? $"{baseUrl}/vehicle-images/{vehicle.ImagePath}" : null,
+        //     Brand = vehicle.Brand == null ? null : new BrandDto
+        //     {
+        //         Id = vehicle.Brand.Id,
+        //         Name = vehicle.Brand.Name
+        //     },
+        //     Customer = vehicle.Customer == null ? null : new CustomerDto
+        //     {
+        //         Id = vehicle.Customer.Id,
+        //         Name = vehicle.Customer.Name,
+        //         Mobile = vehicle.Customer.Mobile,
+        //         Nic = vehicle.Customer.Nic,
+        //         Email = vehicle.Customer.Email
+        //     } 
+        // };
+        // return Ok(vehicleById);
+
     }
+
     [HttpPost]
     public async Task<IActionResult> SaveVehicle([FromForm] VehicleAddDto vehicleAddDto)
     {
@@ -175,23 +294,6 @@ public class VehiclesController : ControllerBase
                 await vehicleUpdateDto.Image.CopyToAsync(stream);
             }
             vehicle.ImagePath = newFileName;
-        }
-        else
-        {
-            // if (!string.IsNullOrEmpty(vehicle.ImagePath))
-            // {
-            //     var oldImagePath = Path.Combine(Directory.GetCurrentDirectory(),
-            //     "wwwroot",
-            //     "vehicle-images",
-            //     vehicle.ImagePath
-            //     );
-
-            //     if (System.IO.File.Exists(oldImagePath))
-            //     {
-            //         System.IO.File.Delete(oldImagePath);
-            //     }
-            //     vehicle.ImagePath = null;
-            // }
         }
 
         vehicle.PlateNumber = vehicleUpdateDto.PlateNumber;

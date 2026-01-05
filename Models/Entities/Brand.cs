@@ -8,6 +8,8 @@ public class Brand
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     public int Id { get; set; }
     public required string Name { get; set; }
+
+    public string? ImagePath {get; set;}
     // navigation property
     [JsonIgnore]
     public ICollection<Vehicle> Vehicles {get; set;} = new List<Vehicle>();
