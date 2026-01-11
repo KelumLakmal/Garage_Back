@@ -1,4 +1,5 @@
 using System.Runtime.CompilerServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,6 +26,7 @@ public class VehiclesController : ControllerBase
 
     //     return Ok(vehicles);
     // }
+    [Authorize(Policy = "VEHICLE_VIEW")]
     [HttpGet]
     public async Task<IActionResult> GetVehicles([FromQuery] VehicleFilterDto vehicleFilterDto)
     {
@@ -126,6 +128,7 @@ public class VehiclesController : ControllerBase
     //     }
     //     return Ok(vehicle);
     // }
+    [Authorize(Policy = "VEHICLE_VIEW")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetVehicleById(int id)
     {
@@ -197,6 +200,7 @@ public class VehiclesController : ControllerBase
 
     }
 
+    [Authorize(Policy = "VEHICLE_CREATE")]
     [HttpPost]
     public async Task<IActionResult> SaveVehicle([FromForm] VehicleAddDto vehicleAddDto)
     {
@@ -246,6 +250,8 @@ public class VehiclesController : ControllerBase
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetVehicleById), new { id = newVehicle.Id }, newVehicle);
     }
+
+    [Authorize(Policy = "VEHICLE_UPDATE")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateVehicle(int id, [FromForm] VehicleUpdateDto vehicleUpdateDto)
     {
@@ -305,6 +311,8 @@ public class VehiclesController : ControllerBase
         await _context.SaveChangesAsync();
         return Ok(vehicle);
     }
+
+    [Authorize(Policy = "VEHICLE_DELETE")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteVehicle(int id)
     {

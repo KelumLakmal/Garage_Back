@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +24,24 @@ builder.Services.AddCors(options =>
             .AllowAnyMethod();
     });
 });
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("VEHICLE_CREATE",
+        policy => policy.Requirements.Add(new PermissionRequirement("VEHICLE_CREATE"))
+    );
+    options.AddPolicy("VEHICLE_UPDATE",
+        policy => policy.Requirements.Add(new PermissionRequirement("VEHICLE_UPDATE"))
+    );
+    options.AddPolicy("VEHICLE_DELETE",
+        policy => policy.Requirements.Add(new PermissionRequirement("VEHICLE_DELETE"))
+    );
+    options.AddPolicy("VEHICLE_VIEW",
+        policy => policy.Requirements.Add(new PermissionRequirement("VEHICLE_VIEW"))
+    );
+});
+
+builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();
 
 var app = builder.Build();
 

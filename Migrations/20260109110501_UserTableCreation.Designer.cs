@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GarageBack.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260109110501_UserTableCreation")]
+    partial class UserTableCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -72,27 +75,6 @@ namespace GarageBack.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("Permission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<string>("Code")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Permissions");
-                });
-
             modelBuilder.Entity("User", b =>
                 {
                     b.Property<int>("Id")
@@ -107,6 +89,7 @@ namespace GarageBack.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
@@ -116,29 +99,6 @@ namespace GarageBack.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-                });
-
-            modelBuilder.Entity("UserPermission", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("PermissionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserPermissions");
                 });
 
             modelBuilder.Entity("Vehicle", b =>
@@ -185,25 +145,6 @@ namespace GarageBack.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("UserPermission", b =>
-                {
-                    b.HasOne("Permission", "Permission")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("User", "User")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Vehicle", b =>
                 {
                     b.HasOne("Brand", "Brand")
@@ -231,16 +172,6 @@ namespace GarageBack.Migrations
             modelBuilder.Entity("Customer", b =>
                 {
                     b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("Permission", b =>
-                {
-                    b.Navigation("UserPermissions");
-                });
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Navigation("UserPermissions");
                 });
 #pragma warning restore 612, 618
         }

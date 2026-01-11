@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GarageBack.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260109112330_UserPermissionTableCreation")]
+    partial class UserPermissionTableCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -107,6 +110,7 @@ namespace GarageBack.Migrations
                         .HasDefaultValue(true);
 
                     b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserName")
@@ -133,10 +137,6 @@ namespace GarageBack.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PermissionId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("UserPermissions");
                 });
@@ -185,25 +185,6 @@ namespace GarageBack.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("UserPermission", b =>
-                {
-                    b.HasOne("Permission", "Permission")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("PermissionId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("User", "User")
-                        .WithMany("UserPermissions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Permission");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("Vehicle", b =>
                 {
                     b.HasOne("Brand", "Brand")
@@ -231,16 +212,6 @@ namespace GarageBack.Migrations
             modelBuilder.Entity("Customer", b =>
                 {
                     b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("Permission", b =>
-                {
-                    b.Navigation("UserPermissions");
-                });
-
-            modelBuilder.Entity("User", b =>
-                {
-                    b.Navigation("UserPermissions");
                 });
 #pragma warning restore 612, 618
         }
