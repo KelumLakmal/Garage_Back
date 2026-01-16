@@ -94,14 +94,25 @@ public class LoginsController : ControllerBase
 
         var token = GenerateJwt(user, permissions);
 
+        // var tokenDetails = new
+        // {
+        //     Token = token,
+        //     User = new
+        //     {
+        //         Id = user.Id,
+        //         UserName = user.UserName,
+        //         Permissions = permissions
+        //     }
+        // };
+
         var tokenDetails = new
         {
-            token,
-            user = new
+            Token = token,
+            User = new
             {
-                Id = user.Id,
-                UserName = user.UserName,
-                permissions = permissions
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserImage = user.UserImagePath
             }
         };
 

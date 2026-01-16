@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController: ControllerBase
+public class UsersController : ControllerBase
 {
     private readonly ApplicationDbContext _context;
     private readonly PasswordHasher<User> _passwordHasher;
@@ -15,10 +15,21 @@ public class UsersController: ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetUsers()
     {
+        // var users = await _context.Users
+        // .Include(u => u.UserPermissions)
+        // .ThenInclude(up => up.Permission)
+        // .OrderByDescending(u => u.Id).ToListAsync();
+        // return Ok(users);
+
         var users = await _context.Users
-        .Include(u => u.UserPermissions)
-        .ThenInclude(up => up.Permission)
-        .OrderByDescending(u => u.Id).ToListAsync();
+        .Where(u => u.IsActive == true)
+        .Select(u => new UserDto
+        {
+            FirstName = u.FirstName,
+            LastName = u.LastName,
+            UserImagePath = u.UserImagePath
+        }).ToListAsync();
+
         return Ok(users);
     }
 
@@ -33,6 +44,9 @@ public class UsersController: ControllerBase
         var user = new User
         {
             UserName = userAddDto.UserName,
+            FirstName = userAddDto.FirstName,
+            LastName = userAddDto.LastName,
+            CreatedDate = DateTime.Now,
             IsActive = true
         };
 
