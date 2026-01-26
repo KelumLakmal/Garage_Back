@@ -112,7 +112,7 @@ public class LoginsController : ControllerBase
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                UserImage = user.UserImagePath
+                // UserImage = user.UserImagePath
             }
         };
 

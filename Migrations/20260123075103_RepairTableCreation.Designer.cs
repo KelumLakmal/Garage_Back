@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GarageBack.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260123075103_RepairTableCreation")]
+    partial class RepairTableCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -258,43 +261,6 @@ namespace GarageBack.Migrations
                     b.ToTable("Vehicles");
                 });
 
-            modelBuilder.Entity("VehicleRepair", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsActive")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("RepairId")
-                        .HasColumnType("int");
-
-                    b.Property<long?>("SpeedoMeter")
-                        .HasColumnType("bigint");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RepairId");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("VehicleRepairs");
-                });
-
             modelBuilder.Entity("Repair", b =>
                 {
                     b.HasOne("RepairCategory", "RepairCategory")
@@ -344,25 +310,6 @@ namespace GarageBack.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("VehicleRepair", b =>
-                {
-                    b.HasOne("Repair", "Repair")
-                        .WithMany("VehicleRepairs")
-                        .HasForeignKey("RepairId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Vehicle", "Vehicle")
-                        .WithMany("VehicleRepairs")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Repair");
-
-                    b.Navigation("Vehicle");
-                });
-
             modelBuilder.Entity("Brand", b =>
                 {
                     b.Navigation("Vehicles");
@@ -378,11 +325,6 @@ namespace GarageBack.Migrations
                     b.Navigation("UserPermissions");
                 });
 
-            modelBuilder.Entity("Repair", b =>
-                {
-                    b.Navigation("VehicleRepairs");
-                });
-
             modelBuilder.Entity("RepairCategory", b =>
                 {
                     b.Navigation("Repairs");
@@ -391,11 +333,6 @@ namespace GarageBack.Migrations
             modelBuilder.Entity("User", b =>
                 {
                     b.Navigation("UserPermissions");
-                });
-
-            modelBuilder.Entity("Vehicle", b =>
-                {
-                    b.Navigation("VehicleRepairs");
                 });
 #pragma warning restore 612, 618
         }
