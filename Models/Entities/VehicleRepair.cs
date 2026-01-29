@@ -13,6 +13,7 @@ public class VehicleRepair
     public DateTime CreatedDate { get; set; }
     public DateTime? ModifiedDate { get; set; }
     public uint? SpeedoMeter { get; set; }
+    public string? Note {get; set;}
     public bool IsActive { get; set; }
 
 }

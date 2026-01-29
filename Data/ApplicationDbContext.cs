@@ -83,6 +83,10 @@ public class ApplicationDbContext : DbContext
         .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<VehicleRepair>()
+        .Property(vr => vr.Note)
+        .HasColumnType("nvarchar(max)");
+
+        modelBuilder.Entity<VehicleRepair>()
         .Property(vr => vr.IsActive)
         .HasDefaultValue(true);
 
