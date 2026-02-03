@@ -12,17 +12,20 @@ public class VehicleRepairsController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<IActionResult> GetVehicleRepairs()
+    public async Task<IActionResult> GetVehicleRepairs([FromQuery] VehicleRepairFilterDto vehicleRepairFilterDto)
     {
-        // var vehicleRepairs = await _context.VehicleRepairs
-        // .Where(vr => vr.IsActive == true)
-        // .Include(vr => vr.Vehicle)
-        // .Include(vr => vr.Repair)
-        // .OrderByDescending(vr => vr.Id)
-        // .ToListAsync();
-        var vehicleRepairs = await _context.VehicleRepairs
-        .Where(vr => vr.IsActive == true)
-        .Select(vr => new VehicleRepairDto
+        IQueryable<VehicleRepair> query = _context.VehicleRepairs.Where(vr => vr.IsActive == true);
+
+        if (!string.IsNullOrWhiteSpace(vehicleRepairFilterDto.PlateNumber))
+        {
+            query = query.Where(vr => EF.Functions.Like(vr.Vehicle.PlateNumber, $"%{vehicleRepairFilterDto.PlateNumber}%"));
+        }
+        if (vehicleRepairFilterDto.RepairId > 0)
+        {
+            query = query.Where(vr => vr.RepairId == vehicleRepairFilterDto.RepairId);
+        }
+
+        var vehicleRepairs = await query.Select(vr => new VehicleRepairDto
         {
             Id = vr.Id,
             Vehicle = new VehicleDto
@@ -48,6 +51,40 @@ public class VehicleRepairsController : ControllerBase
         .ToListAsync();
 
         return Ok(vehicleRepairs);
+        // var vehicleRepairs = await _context.VehicleRepairs
+        // .Where(vr => vr.IsActive == true)
+        // .Include(vr => vr.Vehicle)
+        // .Include(vr => vr.Repair)
+        // .OrderByDescending(vr => vr.Id)
+        // .ToListAsync();
+        // var vehicleRepairs = await _context.VehicleRepairs
+        // .Where(vr => vr.IsActive == true)
+        // .Select(vr => new VehicleRepairDto
+        // {
+        //     Id = vr.Id,
+        //     Vehicle = new VehicleDto
+        //     {
+        //         Id = vr.Vehicle.Id,
+        //         PlateNumber = vr.Vehicle.PlateNumber
+        //     },
+        //     Repair = new RepairDto
+        //     {
+        //         Id = vr.Repair.Id,
+        //         Name = vr.Repair.Name,
+        //         RepairCategory = new RepairCategoryDto
+        //         {
+        //             Id = vr.Repair.RepairCategory.Id,
+        //             Name = vr.Repair.RepairCategory.Name
+        //         }
+        //     },
+        //     RepairedDate = vr.CreatedDate,
+        //     SpeedoMeter = vr.SpeedoMeter,
+        //     Note = vr.Note
+        // })
+        // .OrderByDescending(vr => vr.Id)
+        // .ToListAsync();
+
+        // return Ok(vehicleRepairs);
     }
 
     [HttpPost]

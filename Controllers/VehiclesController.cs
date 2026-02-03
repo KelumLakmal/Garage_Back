@@ -204,12 +204,32 @@ public class VehiclesController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> SaveVehicle([FromForm] VehicleAddDto vehicleAddDto)
     {
+        if (string.IsNullOrWhiteSpace(vehicleAddDto.PlateNumber))
+        {
+            return BadRequest("PlateNumber is required..");
+        }
+        if (string.IsNullOrWhiteSpace(vehicleAddDto.Model))
+        {
+            return BadRequest("Model is required..");
+        }
+        var plateNo = vehicleAddDto.PlateNumber.Trim().ToLower();
+
+        var isPlateNoExists = await _context.Vehicles.AnyAsync(v =>
+            v.IsActive == true &&
+            v.PlateNumber != null &&
+            string.Equals(v.PlateNumber, plateNo));
+
+        if (isPlateNoExists)
+        {
+            return BadRequest("PlateNumber is already exists..");
+        }
+
         var brandExists = await _context.Brands.AnyAsync(b => b.Id == vehicleAddDto.BrandId);
         if (!brandExists)
         {
             return BadRequest("Invalid BrandId.");
         }
-        var customerExists = await _context.Customers.AnyAsync(c => c.Id == vehicleAddDto.CustomerId);
+        var customerExists = await _context.Customers.AnyAsync(c => c.IsActive == true && c.Id == vehicleAddDto.CustomerId);
         if (!customerExists)
         {
             return BadRequest("Invalid Customer");
@@ -255,6 +275,14 @@ public class VehiclesController : ControllerBase
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateVehicle(int id, [FromForm] VehicleUpdateDto vehicleUpdateDto)
     {
+        if (string.IsNullOrWhiteSpace(vehicleUpdateDto.PlateNumber))
+        {
+            return BadRequest("PlateNumber is required..");
+        }
+        if (string.IsNullOrWhiteSpace(vehicleUpdateDto.Model))
+        {
+            return BadRequest("Model is required..");
+        }
         var vehicle = await _context.Vehicles.FindAsync(id);
         if (vehicle is null)
         {
@@ -266,10 +294,22 @@ public class VehiclesController : ControllerBase
             return BadRequest("Invalid BrandId.");
         }
 
-        var customerExists = await _context.Customers.AnyAsync(c => c.Id == vehicleUpdateDto.CustomerId);
+        var customerExists = await _context.Customers.AnyAsync(c => c.IsActive == true && c.Id == vehicleUpdateDto.CustomerId);
         if (!customerExists)
         {
             return BadRequest("Invalid Customer");
+        }
+
+        var plateNo = vehicleUpdateDto.PlateNumber.Trim().ToLower();
+
+        var isPlateNoExists = await _context.Vehicles.AnyAsync(v =>
+            v.Id != vehicle.Id &&
+            v.PlateNumber != null &&
+            string.Equals(v.PlateNumber, plateNo));
+        
+        if (isPlateNoExists)
+        {
+            return BadRequest("PlateNumber is already exists..");
         }
 
         // string? newImagePath = null;

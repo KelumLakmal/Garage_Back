@@ -21,6 +21,8 @@ public class LoginsController : ControllerBase
         _passwordHasher = new PasswordHasher<User>();
     }
 
+    private string BaseUrl => $"{Request.Scheme}://{Request.Host}";
+
     private string GenerateJwt(User user, List<string> permissions)
     {
         var claims = new List<Claim>()
@@ -112,6 +114,7 @@ public class LoginsController : ControllerBase
             {
                 FirstName = user.FirstName,
                 LastName = user.LastName,
+                Imagepath = user.UserImagePath != null ? $"{BaseUrl}/user-images/{user.UserImagePath}" : null,
                 // UserImage = user.UserImagePath
             }
         };
