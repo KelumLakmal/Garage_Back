@@ -62,6 +62,30 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("VEHICLE_VIEW",
         policy => policy.Requirements.Add(new PermissionRequirement("VEHICLE_VIEW"))
     );
+    options.AddPolicy("CUSTOMER_CREATE",
+        policy => policy.Requirements.Add(new PermissionRequirement("CUSTOMER_CREATE"))
+    );
+    options.AddPolicy("CUSTOMER_UPDATE",
+        policy => policy.Requirements.Add(new PermissionRequirement("CUSTOMER_UPDATE"))
+    );
+    options.AddPolicy("CUSTOMER_DELETE",
+        policy => policy.Requirements.Add(new PermissionRequirement("CUSTOMER_DELETE"))
+    );
+    options.AddPolicy("CUSTOMER_VIEW",
+        policy => policy.Requirements.Add(new PermissionRequirement("CUSTOMER_VIEW"))
+    );
+    options.AddPolicy("VEHICLEREPAIR_CREATE",
+       policy => policy.Requirements.Add(new PermissionRequirement("VEHICLEREPAIR_CREATE"))
+   );
+    options.AddPolicy("VEHICLEREPAIR_UPDATE",
+       policy => policy.Requirements.Add(new PermissionRequirement("VEHICLEREPAIR_UPDATE"))
+   );
+    options.AddPolicy("VEHICLEREPAIR_DELETE",
+       policy => policy.Requirements.Add(new PermissionRequirement("VEHICLEREPAIR_DELETE"))
+   );
+    options.AddPolicy("VEHICLEREPAIR_VIEW",
+       policy => policy.Requirements.Add(new PermissionRequirement("VEHICLEREPAIR_VIEW"))
+   );
 });
 
 builder.Services.AddSingleton<IAuthorizationHandler, PermissionHandler>();

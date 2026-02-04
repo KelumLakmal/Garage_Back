@@ -15,5 +15,7 @@ public class UserPermission
 
     // [JsonIgnore]
     public Permission Permission { get; set; } = null!;
+    public bool IsActive {get; set;}
+
 
 }

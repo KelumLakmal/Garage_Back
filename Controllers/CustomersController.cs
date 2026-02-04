@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,8 +22,7 @@ public class CustomersController : ControllerBase
     //     .ToListAsync();
     //     return Ok(allCustomers);
     // }
-
-
+    [Authorize(Policy = "CUSTOMER_VIEW")]
     [HttpGet]
     public async Task<IActionResult> GetCustomers([FromQuery] CustomerFilterDto customerFilterDto)
     {
@@ -55,6 +55,7 @@ public class CustomersController : ControllerBase
         // return Ok(allCustomers);
     }
 
+    [Authorize(Policy = "CUSTOMER_VIEW")]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> GetCustomerById(int id)
     {
@@ -66,6 +67,7 @@ public class CustomersController : ControllerBase
         return Ok(customer);
     }
 
+    [Authorize(Policy = "CUSTOMER_CREATE")]
     [HttpPost]
     public async Task<IActionResult> SaveCustomer([FromBody] CustomerAddDto customerAddDto)
     {
@@ -114,6 +116,7 @@ public class CustomersController : ControllerBase
         return StatusCode(StatusCodes.Status201Created, newCustomer);
     }
 
+    [Authorize(Policy = "CUSTOMER_UPDATE")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateCustomer(int id, [FromBody] CustomerUpdateDto customerUpdateDto)
     {
@@ -227,6 +230,7 @@ public class CustomersController : ControllerBase
         // return Ok(customer);
     }
 
+    [Authorize(Policy = "CUSTOMER_DELETE")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteCustomer(int id)
     {

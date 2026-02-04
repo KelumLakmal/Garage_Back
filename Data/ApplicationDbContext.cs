@@ -56,6 +56,9 @@ public class ApplicationDbContext : DbContext
         .HasForeignKey(up => up.PermissionId)
         .OnDelete(DeleteBehavior.Restrict);
 
+        modelBuilder.Entity<UserPermission>()
+        .Property(up => up.IsActive)
+        .HasDefaultValue(true);
         modelBuilder.Entity<RepairCategory>()
         .Property(rc => rc.IsActive)
         .HasDefaultValue(true);

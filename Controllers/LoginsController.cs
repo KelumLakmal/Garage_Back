@@ -56,10 +56,16 @@ public class LoginsController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> Login(LoginDto loginDto)
     {
+        // var user = await _context.Users
+        // .Include(u => u.UserPermissions)
+        // .ThenInclude(up => up.Permission)
+        // .FirstOrDefaultAsync(u => u.UserName == loginDto.UserName && u.IsActive == true);
         var user = await _context.Users
-        .Include(u => u.UserPermissions)
-        .ThenInclude(up => up.Permission)
-        .FirstOrDefaultAsync(u => u.UserName == loginDto.UserName && u.IsActive == true);
+            .Where(u => u.IsActive == true && u.UserName == loginDto.UserName)
+            .Include(u => u.UserPermissions
+                .Where(up => up.IsActive == true))
+                .ThenInclude(up => up.Permission)
+            .FirstOrDefaultAsync();
 
         if (user == null)
         {
@@ -87,7 +93,7 @@ public class LoginsController : ControllerBase
         // foreach (var userPermission in user.UserPermissions)
         // {
         //     permissionList.Add(userPermission.Permission.Code);
-            
+
         // }
 
         var permissions = user.UserPermissions

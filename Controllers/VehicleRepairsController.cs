@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,7 +11,7 @@ public class VehicleRepairsController : ControllerBase
     {
         _context = applicationDbContext;
     }
-
+    [Authorize(Policy = "VEHICLEREPAIR_VIEW")]
     [HttpGet]
     public async Task<IActionResult> GetVehicleRepairs([FromQuery] VehicleRepairFilterDto vehicleRepairFilterDto)
     {
@@ -87,6 +88,7 @@ public class VehicleRepairsController : ControllerBase
         // return Ok(vehicleRepairs);
     }
 
+    [Authorize(Policy = "VEHICLEREPAIR_CREATE")]
     [HttpPost]
     public async Task<IActionResult> SaveVehicleRepairs([FromBody] VehicleRepairAddDto vehicleRepairAddDto)
     {
@@ -118,6 +120,7 @@ public class VehicleRepairsController : ControllerBase
         return StatusCode(StatusCodes.Status201Created);
     }
 
+    [Authorize(Policy = "VEHICLEREPAIR_UPDATE")]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> UpdateVehicleRepair(int id, [FromBody] VehicleRepairUpdateDto vehicleRepairUpdateDto)
     {
@@ -146,6 +149,7 @@ public class VehicleRepairsController : ControllerBase
         return Ok(vehicleRepair);
     }
 
+    [Authorize(Policy = "VEHICLEREPAIR_DELETE")]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> DeleteVehicleRepair(int id)
     {
